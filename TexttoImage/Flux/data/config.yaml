@@ -1,0 +1,21 @@
+credentials:
+  usernames:
+    jsmith:
+      email: jsmith@gmail.com
+      failed_login_attempts: 0 # Will be managed automatically
+      logged_in: False # Will be managed automatically
+      name: John Smith
+      password: abc # Will be hashed automatically
+    rbriggs:
+      email: rbriggs@gmail.com
+      failed_login_attempts: 0 # Will be managed automatically
+      logged_in: False # Will be managed automatically
+      name: Rebecca Briggs
+      password: def # Will be hashed automatically
+cookie:
+  expiry_days: 30
+  key: "e324670610d643aa0f4f04717f4ed8713297343c45bec4024f9c01e1f8fa9a97"
+  name: test_cookie
+pre-authorized:
+  emails:
+  - melsby@gmail.com
