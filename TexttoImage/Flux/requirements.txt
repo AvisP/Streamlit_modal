@@ -1,1 +1,2 @@
 streamlit-authenticator
+huggingface_hub
