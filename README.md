@@ -11,7 +11,7 @@ The frontend has been created using streamlit that has a simple authenticator. T
 # Text to Video Application 
 
 ## CogVideoX 1.5 
-https://github.com/user-attachments/assets/9633fd8a-3dbb-451c-8655-575c902f363b
+https://github.com/user-attachments/assets/6c5d5fa8-b4f7-42fc-ac69-dcd778721498
 
 A frontend has been developed with streamlit where the user can enter a prompt describing the scene they want to describe in a sequence. It has the option of entering number of inference steps, guidance scale, manual seed. There is an API created using modal container that takes in these values and generates a video. The video is saved on the modal container and also sent back to the streamlit application as base64 encoded content. An open source model CogVideoX 1.5B is used to generate the video. The application can further be enhanced by adding an authentication component.
 
