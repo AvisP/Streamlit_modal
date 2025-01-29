@@ -8,4 +8,4 @@ The frontend after successful authentication gives access to the apploication wh
 
 Some examples of image generated using this application
 
-https://raw.githubusercontent.com/AvisP/Streamlit_modal/blob/main/TexttoImage/Flux/img%26vid/SampleImage.png
+![IMG1](https://raw.githubusercontent.com/AvisP/Streamlit_modal/blob/main/TexttoImage/Flux/img%26vid/SampleImage.png)
