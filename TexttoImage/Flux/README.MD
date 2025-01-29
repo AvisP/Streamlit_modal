@@ -9,3 +9,7 @@ The frontend after successful authentication gives access to the apploication wh
 Some examples of image generated using this application
 
 ![IMG1](img&vid/SampleImage.png)
+
+![IMG2](img&vid/SampleImage3.png)
+
+![IMG3](TexttoImage/Flux/img&vid/b5861826defc457dcfd92996971d2e69e84499b1163b1b6ede8acd97.jpg)
