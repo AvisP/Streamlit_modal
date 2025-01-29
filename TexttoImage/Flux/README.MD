@@ -8,4 +8,4 @@ The frontend after successful authentication gives access to the apploication wh
 
 Some examples of image generated using this application
 
-[IMG1](img%26vid/SampleImage.png)
+[IMG1](img&vid/SampleImage.png)
