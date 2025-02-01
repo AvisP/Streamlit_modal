@@ -1,3 +1,3 @@
 Chat UI with Deep Seek Distilled models hosted on Modal server
 
-![Example1]('Videos/DemoDeepSeekDistilled.mp4')
+[![Watch the video](Videos/DeepSeekDistilledScreenshot.jpg)](Videos/DemoDeepSeekDistilled.mp4)
