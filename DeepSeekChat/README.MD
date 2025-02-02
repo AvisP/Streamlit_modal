@@ -46,17 +46,42 @@ In case of issues with downloading, use the shell, start Python, and use the app
 The modal files use `lmdeploy` python library to load up the DeepSeek models and this is needed on the cliend side as well.
 
 ### (Not tested) 
-The original `Deepseek R1` can also be run similarly loaded up using the script `Deepseekr1_modal_lmdeploy_670B.py` after having downloaded the weights using the script `DeepSeek_model_download.py`.
+The original `Deepseek R1 671B` can also be run similarly loaded up using the script `Deepseekr1_modal_lmdeploy_670B.py` after having downloaded the weights using the script `DeepSeek_model_download.py`.
 However it takes about 10 `A100-80GB` [source](https://github.com/InternLM/lmdeploy/issues/2960) to load up the model in `fp8` format and sepcial permission from `modal` is needed to have access to that many GPUs. However if on any other platform/server there is same amount of GPU resource available then one can try it out. 
 
 ## GUI
+## Overview
 It is recommended to test out the local execution of the individual model files before trying out the GUI
 
-The GUI can be started with the command `streamlit run streamlit_modal_app_distilled_models.py`. A `secrets.toml` file as shown in sample needs to be created with credentials for authentication purpose.
-If executed locally create a folder `.streamlit` and put the `secrets.toml` there and if deployed on streamlit community cloud then it will need to be entered in the secrets.
+## Running the GUI
+The GUI can be started with the command 
 
-After successful authentication the user will be presented with a page to enter a prompt, with some default parameters and make a query and Llama_8b will start automatically. No need to separately run modal scripts. The user request on the first time takes a bit of time to load up the model by `lmdeploy` script but subsequent requests takes less time. Although the `lmdeploy` engine shuts down after a bit of inactivity.
+```bash
+streamlit run streamlit_modal_app_distilled_models.py
+```
 
-Model switching also takes time and increases proportionally to the number of parameters in the model. Increasing the number of new tokens is recomended if chat is going on too long and generally the models respond with a lot of text indicating the thinking process.
+## Authentication
+
+To authenticate, create a `secrets.toml` file. A sample `secrets.toml` file is included in the repository.
+
+- **For local execution**:  
+  Create a `.streamlit` folder in your project directory and place the `secrets.toml` file there.
+
+- **For deployment on Streamlit Community Cloud**:  
+  Enter the credentials directly in the Streamlit secrets.
+
+## Using the GUI
+
+Once authentication is successful, you will be presented with a page where you can enter a prompt, set parameters, and submit a query. The `Llama_8B` model will start automatically, so there’s no need to manually run the Modal scripts.
+
+### Notes:
+- **Initial Request**:  
+  The first user request may take some time to load the model using the `lmdeploy` script. Subsequent requests will be faster. However, the `lmdeploy` engine may shut down after a period of inactivity.
+
+- **Model Switching**:  
+  Switching between models may take additional time, especially for larger models with more parameters.
+
+- **Long Chats**:  
+  For extended chats, it is recommended to increase the number of new tokens to prevent truncated responses. The models often provide verbose output to indicate their reasoning process.
 
 
