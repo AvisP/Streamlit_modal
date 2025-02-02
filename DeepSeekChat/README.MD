@@ -27,19 +27,28 @@ To create an API endpoint for a model, use the following command:
 ```bash
  modal serve Deepseekr1_modal_lmdeploy_[MODEL_NAME].py
 ``` 
-Note the url created on the terminal when executing this command which should be put in the `secrets.toml` file in the `url` variable. The url should be same irresepective of the model being started.
+Note the url created on the terminal when executing this command which should be put in the `secrets.toml` file in the `url` variable. The `url` should be same irresepective of the model being started.
 
+## Downloading Model weights
 The models needs weight that can be easily downloaded using the script `DeepSeek_model_download.py`. The distilled models are stored in a persistent volume mapped to `/models/DeepSeek-model`
-Example use to download a model weight `modal run Deepseek_model_download.py::download_model_to_image --hfrepoid deepseek-ai/DeepSeek-R1-Distill-Qwen-32B `
-It is possible to connect to a shell by running the command `model shell Deepseek_model_download.py::download_model_to_image` and then navigating using linux commands to monitor the files
-In case there is any issue with file downloading it is recommended to use the shell command, start python and use the proper path and `snapshot_download` command to finish the download
+Example use to download a model weight 
+
+```bash
+modal run Deepseek_model_download.py::download_model_to_image --hfrepoid deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+```
+You can also connect to a shell by running: 
+```bash
+model shell Deepseek_model_download.py::download_model_to_image
+``` 
+Once in the shell, use Linux commands to monitor the files.
+In case of issues with downloading, use the shell, start Python, and use the appropriate path along with the `snapshot_download` command from `huggingface_hub` to complete the download.
 
 The modal files use `lmdeploy` python library to load up the DeepSeek models and this is needed on the cliend side as well.
 
-(Not tested) The original `Deepseek R1` can also be run similarly loaded up using the script `Deepseekr1_modal_lmdeploy_670B.py` after having downloaded the weights using the script `DeepSeek_model_download.py`.
+## (Not tested) The original `Deepseek R1` can also be run similarly loaded up using the script `Deepseekr1_modal_lmdeploy_670B.py` after having downloaded the weights using the script `DeepSeek_model_download.py`.
 However it takes about 10 `A100-80GB` [source](https://github.com/InternLM/lmdeploy/issues/2960) to load up the model in `fp8` format and sepcial permission from `modal` is needed to have access to that many GPUs. However if on any other platform/server there is same amount of GPU resource available then one can try it out. 
 
-* GUI
+## GUI
 It is recommended to test out the local execution of the individual model files before trying out the GUI
 
 The GUI can be started with the command `streamlit run streamlit_modal_app_distilled_models.py`. A `secrets.toml` file as shown in sample needs to be created with credentials for authentication purpose.
