@@ -2,6 +2,23 @@ Chat UI with Deep Seek Distilled models hosted on Modal server
 
 [![Watch the video](Videos/DeepSeekDistilledScreenshot.jpg)](Videos/DemoDeepSeekDistilled.mp4)
 
+# DeepSeekr1 Modal Setup and Usage Guide
+
+## Prerequisites
+**Create an account on Modal**  
+   Set up your account and environment by following the instructions [here](https://modal.com/docs/guide).
+
+## Local Execution
+
+### Overview
+Each model is contained in a separate Python file. For example, `Deepseekr1_modal_lmdeploy_Llama_8B.py` contains the distilled DeepSeek `Llama_8B` model, and other files follow a similar structure.
+
+### Running Models Locally
+To test an individual model, run the following command:
+```bash
+modal run Deepseekr1_modal_lmdeploy_[MODEL_NAME].py
+
+
 # Instructions
 ## Distilled DeepSeek Models
 
