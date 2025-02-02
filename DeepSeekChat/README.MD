@@ -45,7 +45,8 @@ In case of issues with downloading, use the shell, start Python, and use the app
 
 The modal files use `lmdeploy` python library to load up the DeepSeek models and this is needed on the cliend side as well.
 
-## (Not tested) The original `Deepseek R1` can also be run similarly loaded up using the script `Deepseekr1_modal_lmdeploy_670B.py` after having downloaded the weights using the script `DeepSeek_model_download.py`.
+### (Not tested) 
+The original `Deepseek R1` can also be run similarly loaded up using the script `Deepseekr1_modal_lmdeploy_670B.py` after having downloaded the weights using the script `DeepSeek_model_download.py`.
 However it takes about 10 `A100-80GB` [source](https://github.com/InternLM/lmdeploy/issues/2960) to load up the model in `fp8` format and sepcial permission from `modal` is needed to have access to that many GPUs. However if on any other platform/server there is same amount of GPU resource available then one can try it out. 
 
 ## GUI
