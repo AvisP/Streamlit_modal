@@ -17,19 +17,17 @@ Each model is contained in a separate Python file. For example, `Deepseekr1_moda
 To test an individual model, run the following command:
 ```bash
 modal run Deepseekr1_modal_lmdeploy_[MODEL_NAME].py
+```
 
+Each file contains a `@app.local_entrypoint` that initializes a message_list.
+## Creating an API Endpoint
 
-# Instructions
-## Distilled DeepSeek Models
+To create an API endpoint for a model, use the following command:
 
-*Pre-requisite : Create an acount in modal and setup based on instructions [here](https://modal.com/docs/guide)
-
-*Local execution
-Each of the individual models are in separate files eg Deepseekr1_modal_lmdeploy_Llama_8B.py contains the distilled Depseek `Llama_8B` model and have simialr structure.
-The files contain a `@app.local_entrypoint` that has a message_list. To test out the indiviudal files one can simply do `modal run Deepseekr1_modal_lmdeploy_[MODEL_NAME].py`
-
-To create an api endpoint execute the command `modal serve Deepseekr1_modal_lmdeploy_[MODEL_NAME].py`. Note the url created on the terminal when executing this command which should be put
-in the secrets.toml file in the url variable. The url should be same irresepective of the model being started.
+```bash
+ modal serve Deepseekr1_modal_lmdeploy_[MODEL_NAME].py
+``` 
+Note the url created on the terminal when executing this command which should be put in the `secrets.toml` file in the `url` variable. The url should be same irresepective of the model being started.
 
 The models needs weight that can be easily downloaded using the script `DeepSeek_model_download.py`. The distilled models are stored in a persistent volume mapped to `/models/DeepSeek-model`
 Example use to download a model weight `modal run Deepseek_model_download.py::download_model_to_image --hfrepoid deepseek-ai/DeepSeek-R1-Distill-Qwen-32B `
