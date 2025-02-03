@@ -48,8 +48,7 @@ The modal files use `lmdeploy` python library to load up the DeepSeek models and
 The original `Deepseek R1 671B` can also be run similarly loaded up using the script `Deepseekr1_modal_lmdeploy_670B.py` after having downloaded the weights using the script `DeepSeek_model_download.py`.
 However it takes about 10 `A100-80GB` [source](https://github.com/InternLM/lmdeploy/issues/2960) to load up the model in `fp8` format and sepcial permission from `modal` is needed to have access to that many GPUs. However if on any other platform/server there is same amount of GPU resource available then one can try it out. 
 
-## GUI
-## Overview
+## GUI Overview
 It is recommended to test out the local execution of the individual model files before trying out the GUI
 
 ## Running the GUI
@@ -111,6 +110,13 @@ A Streamlit GUI has been created for easier interaction with the model. It uses 
 streamlit run streamlit_modal_app_Unsloth.py
 ```
 
-A GUI has also been created with streamlit with the same authentication feature as described before by running the code `streamlit run streamlit_modal_app_Unsloth.py`. It contains an additional space to enter the name of the first file of the directory in modal entrypoint. It is recommended to keep a high value for the maximum number of new token and maximum value is 8192. Unlike `lmdeploy`, `llama.cpp` does not keep the model loaded in memory and exit after execution. So the time between sending a prompt and recieving is significant and would increase as bigger models (with less quantization) are used. Instead provide a problem statement in prompt to allow the model to think about and come out wiht a solution. An example would be the flappy bird game code as included in the script.
+### Additional Features in the GUI:
+- The GUI includes a space to enter the name of the first file in the directory (from the Modal entrypoint).
+- **Maximum Token Limit:** It’s recommended to set a high value for the maximum number of new tokens. The maximum value is 8192 tokens.
+
+### Performance:
+Unlike lmdeploy, llama.cpp does not keep the model loaded in memory and exits after execution. As a result:
+- The time between sending a prompt and receiving a response may be significant, especially as larger models (with less quantization) are used.
+- To optimize, provide a problem statement in the prompt to allow the model to think about and generate a solution. For example, the Flappy Bird game code, as included in the script, under `DEFAULT_PROMPT` can be used.
 
 
