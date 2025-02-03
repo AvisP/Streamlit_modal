@@ -119,4 +119,7 @@ Unlike lmdeploy, llama.cpp does not keep the model loaded in memory and exits af
 - The time between sending a prompt and receiving a response may be significant, especially as larger models (with less quantization) are used.
 - To optimize, provide a problem statement in the prompt to allow the model to think about and generate a solution. For example, the Flappy Bird game code, as included in the script, under `DEFAULT_PROMPT` can be used.
 
-
+To Do
+- [ ] Add a possibility to display the terminal message from the server on the streamlit app to inform about model loading and progress
+- [ ] Stream the response from the R1 Usloth model as and when generation is happening
+- [ ] Improve the response of the model on the streamlit page
