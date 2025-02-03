@@ -85,10 +85,31 @@ Once authentication is successful, you will be presented with a page where you c
 
 # DeepSeek R1 Quantized Unsloth - Modal Setup and Usage Guide
 
-[Unsloth](https://unsloth.ai/blog/deepseekr1-dynamic) has released some quantized version of the DeepseekR1 model. They can be executed using `llama.cpp` which needs to be compiled on the image/container where it will run. 
+[Unsloth](https://unsloth.ai/blog/deepseekr1-dynamic) has released a quantized version of the DeepSeekR1 model. These models can be executed using `llama.cpp`, which needs to be compiled on the image/container where they will run.
 
-Similar to previous example the model weights need to be downloaded first. As an example the weights for the model `DeepSeek-R1-UD-IQ1_M` on a separate modal volume `unsloth_model` using the comand `modal run Deepseek_model_download.py::download_model_to_image --hfrepoid unsloth/DeepSeek-R1-GGUF --allowpattern "*R1-UD-IQ1*"`. In case of issue use the `model shell` command to log in and use python commands to resume and verify if all the files have downloaed. Once completed, note the first file name `*****-00001-of-00004.gguf` that needs to provided to `model_entrypoint_file` variable in the `Deepseekr1_modal_unsloth.py` script.
-In the `@local_entrypoint` section of the script there is a place to enter prompt and can be tested by running `modal run Deepseekr1_modal_unsloth.py` 
+## Model Weights and Local Execution
+
+Before running the model, the model weights need to be downloaded. As an example, to download the weights for the model `DeepSeek-R1-UD-IQ1_M`, use the following command to download them to a separate Modal volume `unsloth_model`:
+
+```bash
+modal run Deepseek_model_download.py::download_model_to_image --hfrepoid unsloth/DeepSeek-R1-GGUF --allowpattern "*R1-UD-IQ1*"
+```
+
+In case of issue use the `model shell` command to log in and use python commands to resume and verify if all the files have downloaed. Once completed, note the first file name `*****-00001-of-00004.gguf` that needs to provided to `model_entrypoint_file` variable in the `Deepseekr1_modal_unsloth.py` script.
+
+To test the model through script, run the following command:
+```bash
+modal run Deepseekr1_modal_unsloth.py
+```
+In the `@local_entrypoint` section of the script there is a place to enter prompt and can be tested by running `modal run Deepseekr1_modal_unsloth.py`
+
+## GUI Setup
+
+A Streamlit GUI has been created for easier interaction with the model. It uses the same authentication method described previously. To run the GUI, use the following command:
+
+```bash
+streamlit run streamlit_modal_app_Unsloth.py
+```
 
 A GUI has also been created with streamlit with the same authentication feature as described before by running the code `streamlit run streamlit_modal_app_Unsloth.py`. It contains an additional space to enter the name of the first file of the directory in modal entrypoint. It is recommended to keep a high value for the maximum number of new token and maximum value is 8192. Unlike `lmdeploy`, `llama.cpp` does not keep the model loaded in memory and exit after execution. So the time between sending a prompt and recieving is significant and would increase as bigger models (with less quantization) are used. Instead provide a problem statement in prompt to allow the model to think about and come out wiht a solution. An example would be the flappy bird game code as included in the script.
 
