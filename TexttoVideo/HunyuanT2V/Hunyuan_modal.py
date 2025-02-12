@@ -41,6 +41,8 @@ MINUTES = 60
 HOURS = 60 * MINUTES
 HF_MODEL_PATH = "tencent/HunyuanVideo"
 
+timeout = 70*MINUTES
+
 GPU_TYPE = os.environ.get("GPU_TYPE", "A100-80GB")
 GPU_COUNT = os.environ.get("GPU_COUNT", 1)
 
@@ -110,13 +112,13 @@ with hunyuan_image.imports():
     import os
     import base64
     import json
+    import logging
 
 @app.function(
     image=image_cpu,
     volumes={
         MODEL_PATH: model,
     },
-    # gpu=GPU_CONFIG,#modal.gpu.H100(count=1),
     timeout=20 * MINUTES,
 )
 def download_model():
@@ -234,10 +236,14 @@ class LogStreamHandler:
         MODEL_PATH: model,
     },
     gpu=GPU_CONFIG,
-    timeout=70 * MINUTES,
+    timeout=timeout,
     container_idle_timeout=10 * MINUTES,
 )
 class Hunyuan_text2vid:
+    def __init__(self, fp8_flag=False):
+        # Save the fp8 variable during initialization
+        self.fp8_flag = fp8_flag
+
     @modal.enter()
     def load_model(self):
         os.chdir(MODEL_PATH / "Hunyuan")
@@ -245,14 +251,20 @@ class Hunyuan_text2vid:
         import io
         import sys
         sys.path.append("/models/Hunyuan")
-        import logging
+        
         # from hyvideo.config import parse_args
         from hyvideo.inference import HunyuanVideoSampler
         from hyvideo.config import sanity_check_args
-        import sys
         import argparse
-
         MODEL_BASE = os.path.join(os.getcwd(), "ckpts")
+
+        if self.fp8_flag:
+            print(f"Loading model with fp8: {self.fp8_flag}")
+            dit_weight_path = f"{MODEL_BASE}/hunyuan-video-t2v-720p/transformers/mp_rank_00_model_states_fp8.pt"
+        else:
+            print("Loading model with default settings.")
+            dit_weight_path = f"{MODEL_BASE}/hunyuan-video-t2v-720p/transformers/mp_rank_00_model_states.pt"
+        
         args_dict = {
             'model': "HYVideo-T/2-cfgdistill", # choices = 'HYVideo-T/2', 'HYVideo-T/2-cfgdistill'
             'latent_channels': 16,
@@ -282,7 +294,7 @@ class Hunyuan_text2vid:
             'use_linear_quadratic_schedule': False,
             'linear_schedule_end': 25,
             'model_base': "ckpts",
-            'dit_weight': f"{MODEL_BASE}/hunyuan-video-t2v-720p/transformers/mp_rank_00_model_states.pt", #f"{MODEL_BASE}/hunyuan-video-t2v-720p/transformers/mp_rank_00_model_states_fp8.pt", 
+            'dit_weight': dit_weight_path, 
             'model_resolution': '540p', # ["540p", "720p"]
             'load_key': "module",
             'use_cpu_offload': False,
@@ -301,7 +313,7 @@ class Hunyuan_text2vid:
             'neg_prompt': None,
             'cfg_scale': 1.0,
             'embedded_cfg_scale': 6.0,
-            'use_fp8': False,
+            'use_fp8': self.fp8_flag,
             'reproduce': False,
             'ulysses_degree': 1,
             'ring_degree': 1,
@@ -309,7 +321,6 @@ class Hunyuan_text2vid:
         args = argparse.Namespace(**args_dict)
         sanity_check_args(args)
         print(args)
-
         models_root_path = Path(args.model_base)
         if not models_root_path.exists():
             raise ValueError(f"`models_root` not exists: {models_root_path}")
@@ -344,7 +355,7 @@ class Hunyuan_text2vid:
         args = hunyuan_video_sampler.args
         self.args =args
 
-        print("demo load function")
+        print("Model loading complete")
 
     @modal.method()
     def generate(
@@ -363,9 +374,7 @@ class Hunyuan_text2vid:
     ):
         from hyvideo.utils.file_utils import save_videos_grid
         from loguru import logger
-        from datetime import datetime
         import base64
-        from tqdm import tqdm
         import sys
         import io
         import logging
@@ -386,7 +395,7 @@ class Hunyuan_text2vid:
             self.args.seed = manual_seed
         else:
             self.args.seed_type = 'auto'
-            self.args.seed = 42
+            self.args.seed = 42 
 
         # # Create a StringIO buffer to capture the output in a string
         log_capture_string = io.StringIO()
@@ -443,7 +452,7 @@ class Hunyuan_text2vid:
     volumes={
         MODEL_PATH: model,
     },
-    timeout=20 * MINUTES)
+    timeout=timeout)
 @modal.web_endpoint(docs=True)
 def web_inference( 
         prompt: str,
@@ -456,9 +465,11 @@ def web_inference(
         flow_reverse: bool = True,
         # num_videos_per_prompt: int = 1,
         manual_seed: int = 42,
+        use_fp8: bool = False,
         # uuid_sent: str = None
     ): 
-        function_call = Hunyuan_text2vid().generate.spawn(prompt,
+        
+        function_call = Hunyuan_text2vid(fp8_flag=use_fp8).generate.spawn(prompt,
                 height=height,
                 width=width,
                 infer_steps=infer_steps, 
@@ -467,7 +478,7 @@ def web_inference(
                 flow_shift=flow_shift,
                 flow_reverse=flow_reverse,
                 # num_videos_per_prompt=num_videos_per_prompt,
-                manual_seed=manual_seed,)
+                manual_seed=manual_seed)
 
         return {"function_call_id": function_call.object_id}
 
@@ -475,7 +486,7 @@ def web_inference(
     volumes={
         MODEL_PATH: model,
     },
-    timeout=20 * MINUTES)
+    timeout=timeout)
 @modal.web_endpoint(docs=True)
 def cancel_call(function_call_id: str):
     FunctionCall.from_id(function_call_id).cancel()
@@ -485,7 +496,7 @@ def cancel_call(function_call_id: str):
     volumes={
         MODEL_PATH: model,
     },
-    timeout=20 * MINUTES)
+    timeout=timeout)
 @modal.web_endpoint(docs=True)
 def get_result(function_call_id: str):
     return FunctionCall.from_id(function_call_id).get()
@@ -532,6 +543,7 @@ def main(
         "flow_reverse": True,
         'num_videos_per_prompt': 1,
         'manual_seed': 6789,
+        'use_fp8': True,
     }
     # Define the headers
     headers = {

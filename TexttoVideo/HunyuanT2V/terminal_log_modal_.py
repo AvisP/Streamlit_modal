@@ -7,6 +7,9 @@ import asyncio
 from pathlib import Path
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
+MINUTES = 60
+HOURS = 60 * MINUTES
+
 # Create an app with the Modal framework
 app = modal.App("my-app")
 app.image = modal.Image.debian_slim().pip_install("fastapi", "websockets")
@@ -57,7 +60,8 @@ file_content = send_file_content()
 # Function to capture terminal logs and stream them to WebSocket
 @app.function(volumes={
         OUTPUTS_PATH: outputs,  # videos will be saved to a distributed volume
-    })
+    },
+    timeout=70 * MINUTES,)
 
 @modal.asgi_app()
 def log_endpoint():

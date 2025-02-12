@@ -9,6 +9,7 @@ import queue
 from uuid import uuid4
 from websocket import WebSocketApp
 import string
+import re
 
 # WebSocket server URI
 start_url = st.secrets["Model_url"]["start_url"]
@@ -36,6 +37,7 @@ def save_metadata(
     num_videos_per_prompt: int,
     manual_seed: int,
     path: str,
+    use_fp8: bool,
 ) -> None:
     """
     Save metadata to a JSON file.
@@ -57,7 +59,8 @@ def save_metadata(
         "embedded_guidance_scale": embedded_guidance_scale,
         "num_videos_per_prompt": num_videos_per_prompt,
         "manual_seed": manual_seed,
-        "flow_shift": flow_shift
+        "flow_shift": flow_shift,
+        "use_fp8": use_fp8
     }
     with open(path, "w") as f:
         json.dump(metadata, f, indent=4)
@@ -154,8 +157,6 @@ def make_request(url, headers, params):
 # Create a queue to store the response
 result_queue = queue.Queue()
 
-import re
-
 def extract_progress_parts(text):
   """
   Extracts the "x/y" progress parts from the given text, 
@@ -177,6 +178,14 @@ def extract_progress_parts(text):
 
   return loading_progress, general_progress
 
+def cancel_action(function_call_id):
+
+    cancel_response = requests.get(cancel_url, headers={'accept': 'application/json', 'Content-Type': 'application/json'
+            }, params={"function_call_id": function_call_id})
+    print("Cancel Response : ", cancel_response)
+    cancel_status = json.loads(cancel_response.content.decode('utf-8'))['cancelled']
+
+    st.session_state["cancel_action"] = cancel_status
 
 def main() -> None:
     """
@@ -185,14 +194,18 @@ def main() -> None:
     st.set_page_config(page_title="HunYuan Text to Video", page_icon="🎥", layout="wide")
     st.write("# HunYuan Text to Video 🎥")
 
+    if "cancel_action" not in st.session_state:
+        st.session_state["cancel_action"] = False
+
     with st.sidebar:
-        st.info("It will take some time to generate a video (~60 seconds per inference step of the video so 30 inference steps would take 1800).", icon="ℹ️")
+        st.info("It will take some time to generate a video (~60 seconds per inference step of the video so 30 inference steps would take 30 mins).", icon="ℹ️")
         num_inference_steps: int = st.number_input("Inference Steps", min_value=1, max_value=100, value=30)
         guidance_scale: float = st.number_input("Guidance Scale", min_value=0.0, max_value=20.0, value=1.0)
         embedded_guidance_scale: int = st.number_input("Embedded Guidance Scale", min_value=1.0, max_value=10.0, value=6.0)
         flow_shift: int = st.number_input("Flow Shift", min_value=1, max_value=25, value=7)
         manual_seed: int = st.number_input("Manual Seed", min_value=1, max_value=9999, value=42)
         num_videos_per_prompt : int = st.number_input("Number of Videos per prompt", min_value=1, max_value=4, value=1)
+        use_fp8 : bool = st.checkbox("Use FP8", value=False)
         share_links_container = st.empty()
 
     prompt: str = st.chat_input("Prompt")
@@ -219,14 +232,15 @@ def main() -> None:
         output_dir = f"./output/"
         os.makedirs(output_dir, exist_ok=True)
 
-        metadata_path = os.path.join(output_dir, "config.json")
+        metadata_path = os.path.join(output_dir, time.strftime("%Y_%m_%d_%H_%M", time.localtime())+"_metadata.json")
+        print(metadata_path)
         save_metadata(
-            prompt, converted_prompt, num_inference_steps, guidance_scale, embedded_guidance_scale, flow_shift, num_videos_per_prompt, manual_seed, metadata_path
+            prompt, converted_prompt, num_inference_steps, guidance_scale, embedded_guidance_scale, flow_shift, 
+            num_videos_per_prompt, manual_seed, metadata_path, use_fp8
         )
 
         # Create a placeholder for progress updates in Streamlit
         placeholder = st.empty()
-        # cancel_button_placeholder = st.empty()
 
         # Start the WebSocket connection and handle video processing concurrently
         start_websocket()   
@@ -245,6 +259,7 @@ def main() -> None:
                 'num_videos_per_prompt': 1,
                 'manual_seed': manual_seed,
                 'uuid_sent': current_uuid,
+                'use_fp8': use_fp8,
             }
             # Define the headers
             headers = {
@@ -265,18 +280,19 @@ def main() -> None:
             if function_call_id:
                 video_process_thread = threading.Thread(target=make_request, args=(result_url, headers, {"function_call_id": function_call_id}))
                 video_process_thread.start()
-                cancel_action = st.button("Cancel")
+                st.session_state["cancel_action"] = False
+                st.button("Cancel", on_click=cancel_action, args=[function_call_id])
 
                 # video_process_thread.join()  # Wait for the thread to complete
                 while video_process_thread.is_alive():
                     loading_checkpoint_progress, general_progress = extract_progress_parts(progress_message)
-                    if cancel_action:
-                        cancel_response = requests.get(cancel_url, headers=headers, params={"function_call_id": function_call_id})
-                        cancel_status = json.loads(cancel_response.content.decode('utf-8'))['cancelled']
-                        print("Cancel Status ", cancel_status)
-                        if cancel_status:
-                            st.warning("Task cancelled")
-                            break
+                    if st.session_state["cancel_action"]:
+                        # cancel_response = requests.get(cancel_url, headers=headers, params={"function_call_id": function_call_id})
+                        # cancel_status = json.loads(cancel_response.content.decode('utf-8'))['cancelled']
+                        # print("Cancel Status ", cancel_status)
+                        # if cancel_status:
+                        st.warning("Task cancelled")
+                        break
                     if general_progress:
                         # print(f"{progress_type} Progress: {progress}")
                         last_value_general = general_progress[-1]
