@@ -11,7 +11,7 @@ The model is available in both **float-point 16** and **float-point 8** variants
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
 - [Explanation of the Scripts](#explanation-of-the-scripts)
-- [Frontend](#frontend)
+- [Suggestions](#suggestions-for-video-creation)
 
 ## Requirements
 
@@ -63,18 +63,74 @@ This will clone the repository and download the model in the appropriate directo
    ```
 That's it! You can now try out your new **Text-to-Video** setup!
 
-Explanation of how scripts works
-The main script is `Hunyuan_modal.py` which contains a function `download_model` to download the model weights, a class to load the model weights and generate videos  based on the given prompt and given parameters. The script also generates three endpoints one for starting the generation process, antoher for getting result and the third and alst one for cancelation of the current process. These endpoints needs to be entered in the `secrets.toml` file. The main script re directs the terminal output to an output.txt file and there is a companion script `terminal_log_modal.py` that reads the output file and sends the content of output file over a websocket to the streamlit frontend. The terminal log script communicates with the streamlit frontend to ensure the connection is alive. 
+## Explanation of the Scripts
 
-Finally the frontend is contained in the streamlit app `Hunyuan_streamlit_webendpoint.py` which contains different parameters related to the model ( eg inference steps, flow shift, guidance scale, manual_seed, fp8 or fp16 model selection, prompt etc). During generation the sttramlit app first spawns the process with the given parameters by calling the class, then monitors for getting the result or if the user wants to terminate that can also be done by clicking the cancel button. The video generation process is started on a separate thread while the main thread is kept active and using which the streamlit communicates asynchronously with the terminal_log_script. It gets the model loading section and generation which is displayed on a progress bar and finally the video is displayed along with an option to downlaod the generated video.
+### Main Script: `Hunyuan_modal.py`
 
-Suggestions for video creation
+- **`download_model` function**: Downloads the model weights.
+- **Class to load model weights and generate videos**: This class handles the video generation process based on the given prompt and parameters.
+- **Endpoints**: Three endpoints are created:
+  1. **Start generation**: Initiates the video generation process.
+  2. **Get result**: Fetches the generated video.
+  3. **Cancel process**: Cancels the current video generation process.
+  
+  These endpoints need to be added to the `secrets.toml` file.
 
-Set Inference Steps to 7~10, select fp8 and enter a prompt and try it out to see if the video is what you expect to be. If not change prompt and/or seed number and try again. Once you have a satisfactory response then increase it to 50 to get a good quality video. Higher value of Embedded Guidance scale will help to follow prompt closely while lower value will make it imaginative. To have a visual idea of how the generation changes with guidance scale, embedded guidance scale and flow shift take a look [here](https://drive.google.com/drive/folders/1KZb5EY0Q9GNqhivOyJPGX5STkGnF3isq)
+The script redirects terminal output to an `output.txt` file, which is then read by the **log script**.
 
-Also to generate better prompts take some sample prompts from the [paper](https://aivideo.hunyuan.tencent.com/), [project page](https://aivideo.hunyuan.tencent.com/) and use a large language model to ask to devise a similar prompt for the idea you have in mind. 
+---
 
-To do list
+### Companion Script: `terminal_log_modal.py`
 
-Add support for parallel
-Improve the prompt
+- **Reads the output file** (`output.txt`).
+- **Sends the contents over a WebSocket** to the Streamlit frontend.
+- **Ensures the connection is alive** by communicating with the frontend.
+
+---
+
+### Frontend: `Hunyuan_streamlit_webendpoint.py`
+
+- **Model Parameters**:  
+  The frontend contains input fields for various model parameters such as:
+  - Inference steps
+  - Flow shift
+  - Guidance scale
+  - Manual seed
+  - FP8 or FP16 model selection
+  - Prompt input
+
+- **Generation Process**:  
+  During generation, the app spawns a process with the provided parameters and monitors for results. If the user decides to cancel the process, this can be done through a cancel button.
+
+- **Asynchronous Communication**:  
+  The video generation happens on a separate thread, while the main thread remains active. The Streamlit app communicates asynchronously with the terminal log script, displaying progress and updating the UI with the generated video.
+
+- **Progress Bar**:  
+  The app shows a progress bar during the model loading and generation phases. Once complete, the video is displayed along with an option to download it.
+
+## Suggestions for Video Creation
+
+1. **Set Inference Steps**: Start by setting inference steps to **7-10**, select **FP8** model, and enter a prompt. Try it out to see if the generated video matches your expectations. If not, modify the prompt and/or seed number, and try again.
+
+2. **Fine-Tuning**: Once you have a satisfactory result, increase the inference steps to **50** for better video quality.
+
+3. **Embedded Guidance Scale**: 
+   - A higher value for the Embedded Guidance scale will help the model follow the prompt more closely.
+   - A lower value will make the model more imaginative and creative.
+
+4. **Visual Guide**: To understand how the generation changes with the **Guidance Scale**, **Embedded Guidance Scale**, and **Flow Shift**, refer to the visual guide [here](https://drive.google.com/drive/folders/1KZb5EY0Q9GNqhivOyJPGX5STkGnF3isq).
+
+5. **Improving Prompts**: To generate better prompts, refer to sample prompts from the following sources:
+   - [Paper](https://aivideo.hunyuan.tencent.com/)
+   - [Project Page](https://aivideo.hunyuan.tencent.com/)
+   
+   You can also use a large language model to help generate similar prompts based on your idea.
+
+---
+
+## To-Do List
+
+- Add support for **parallel computation**.
+- Improve the **prompt** generation process using a **Large Language Model (LLM)**.
+- Add an **authentication** feature.
+
