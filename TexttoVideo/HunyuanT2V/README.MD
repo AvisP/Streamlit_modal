@@ -2,9 +2,13 @@
 
 This repository demonstrates how to run the state-of-the-art **Hunyuan Text-to-Video** model on **Modal**, a serverless GPU service with a graphical user interface developed using **Streamlit**. The frontend can be hosted on a server or run locally.
 
+![CarVideo](Videos/CarVideo.mp4)
+
 The **Hunyuan model** requires significant GPU memory, approximately **60 GB** to generate a **720p x 1280p** video with **129 frames**. Modal offers various GPU models (A100, A100-80GB, H100, etc.) and allows you to scale up to **8 GPUs** at a cheap hourly rate, with charges only for the duration of use.
 
 The model is available in both **float-point 16** and **float-point 8** variants. It has been tested on the **A100-80GB** model, where typically, **50 inference steps** are needed to generate a high-quality video, with each step taking about **1 minute**. The video generation process can be sped up by adjusting the **ulysses-degree** and **ring-degree**, which parallelize the process and reduce generation time.
+
+![GUIPreview](Videos/GUIPreview.mp4)
 
 ## Table of Contents
 
