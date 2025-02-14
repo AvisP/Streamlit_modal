@@ -1,13 +1,67 @@
 # Hunyuan Text to Video
 
-This repository shows how to run the state of the art [Hunyuan](https://github.com/Tencent/HunyuanVideo) Text to Video model on Modal a serverless GPU service with a Graphical user interface developed with streamlit. The frontend streamlit can be hosted on a server or run locally. The model takes signficant GPU memory to run, based on the provided information it is 60 GB to generate a 720p by 1280p with 129 frames. Modal provides various GPU model (A100, A100-80GB, H100 etc) and as many number needed (8 max) at cheap hourly rate and charged for the duration of use only.
+This repository demonstrates how to run the state-of-the-art **Hunyuan Text-to-Video** model on **Modal**, a serverless GPU service with a graphical user interface developed using **Streamlit**. The frontend can be hosted on a server or run locally.
 
-The model is available in float-point 16 and floating point 8 variant. Tested on A100-80GB, typically it needs 50 inference steps to generate good quality video and each step takes about a minute to generate. The model can be sped up by changing the `ulysses-degre` and `ring-degree` that can parallize the video generation process and reduce the video generation time.
+The **Hunyuan model** requires significant GPU memory, approximately **60 GB** to generate a **720p x 1280p** video with **129 frames**. Modal offers various GPU models (A100, A100-80GB, H100, etc.) and allows you to scale up to **8 GPUs** at a cheap hourly rate, with charges only for the duration of use.
 
-Steps to get start
-First download the model by running the command `modal run -detach Hunyuan_modal.py::download_model` which should git clone the repo and download the model in the appropriate directory. 
+The model is available in both **float-point 16** and **float-point 8** variants. It has been tested on the **A100-80GB** model, where typically, **50 inference steps** are needed to generate a high-quality video, with each step taking about **1 minute**. The video generation process can be sped up by adjusting the **ulysses-degree** and **ring-degree**, which parallelize the process and reduce generation time.
 
-Next enter a prompt in the `app.local_entrypoint` section of `Hunyuan_modal.py` and do a `modal run Hunyuan_modal.py` to see if it executes properly and then execute `modal serve Hunyuan_modal.py`. Also not the different urls of three endoints printed on the terminal that needs to be entered in the `secrets.toml` file that should be placed in a `.streamlit` folder if run locally or put on the secrets if on `streamlit community hub`. Next start the log endpoint by doing `modal serve terminal_log_modal.py` and start the GUI by doing a `streamlit run Hunyuan_streamlit_webpoint.py` locally. And that's it try out your new text to video setup!
+## Table of Contents
+
+- [Requirements](#requirements)
+- [Getting Started](#getting-started)
+- [Explanation of the Scripts](#explanation-of-the-scripts)
+- [Frontend](#frontend)
+
+## Requirements
+
+- Modal account and setup
+- Python 3.8+ environment
+- Streamlit (for GUI)
+- Modal CLI installed
+
+## Getting Started
+
+Follow these steps to get started:
+
+1. **Download the Model**  
+   Run the following command to download the model:
+   ```bash
+   modal run -detach Hunyuan_modal.py::download_model
+   ```
+
+This will clone the repository and download the model in the appropriate directory.
+
+2. **Enter a prompt and generate**
+  Edit the `app.local_entrypoint` section of `Hunyuan_modal.py` and enter a prompt. Then, run the model to ensure it executes properly:
+  ```bash
+  modal run Hunyuan_modal.py
+  ```
+
+3. **Start endpoint**
+   Start the endpoints
+   After confirming the model runs correctly, start the api endpoints of the model:
+   ```bash
+   modal serve Hunyuan_modal.py
+   ```
+
+4. **Configure Secrets**
+   You will see three URLs printed in the terminal. Add these URLs to the `secrets.toml` file:
+   - If running locally, place `secrets.toml` in the `.streamlit` folder.
+   - If using Streamlit Community Hub, add the secrets to the Streamlit secrets settings.
+
+5. **Start the Log Endpoint**
+   Run the following command to start the log endpoint:
+   ```bash
+   modal serve terminal_log_modal.py
+   ```
+
+6. **Run the GUI locally***
+   Start the Streamlit GUI with:
+   ```bash
+   streamlit run Hunyuan_streamlit_webendpoint.py
+   ```
+That's it! You can now try out your new **Text-to-Video** setup!
 
 Explanation of how scripts works
 The main script is `Hunyuan_modal.py` which contains a function `download_model` to download the model weights, a class to load the model weights and generate videos  based on the given prompt and given parameters. The script also generates three endpoints one for starting the generation process, antoher for getting result and the third and alst one for cancelation of the current process. These endpoints needs to be entered in the `secrets.toml` file. The main script re directs the terminal output to an output.txt file and there is a companion script `terminal_log_modal.py` that reads the output file and sends the content of output file over a websocket to the streamlit frontend. The terminal log script communicates with the streamlit frontend to ensure the connection is alive. 
