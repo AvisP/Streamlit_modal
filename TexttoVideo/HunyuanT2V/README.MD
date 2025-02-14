@@ -2,13 +2,14 @@
 
 This repository demonstrates how to run the state-of-the-art **Hunyuan Text-to-Video** model on **Modal**, a serverless GPU service with a graphical user interface developed using **Streamlit**. The frontend can be hosted on a server or run locally.
 
-![CarVideo](Videos/CarVideo.mp4)
+![CarVideo](Videos/Screenshot 2025-02-13 204201.jpg)
 
 The **Hunyuan model** requires significant GPU memory, approximately **60 GB** to generate a **720p x 1280p** video with **129 frames**. Modal offers various GPU models (A100, A100-80GB, H100, etc.) and allows you to scale up to **8 GPUs** at a cheap hourly rate, with charges only for the duration of use.
 
 The model is available in both **float-point 16** and **float-point 8** variants. It has been tested on the **A100-80GB** model, where typically, **50 inference steps** are needed to generate a high-quality video, with each step taking about **1 minute**. The video generation process can be sped up by adjusting the **ulysses-degree** and **ring-degree**, which parallelize the process and reduce generation time.
 
-![GUIPreview](Videos/GUIPreview.mp4)
+[![GUIPreview](Videos/Screenshot 2025-02-13 024659.jpg)](https://github.com/user-attachments/assets/58d80cb7-a385-4ebb-bdb4-e04e0a1f7d39)
+![GUIPreview](https://private-user-images.githubusercontent.com/10809866/413125451-58d80cb7-a385-4ebb-bdb4-e04e0a1f7d39.mp4?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mzk1MDU5MDAsIm5iZiI6MTczOTUwNTYwMCwicGF0aCI6Ii8xMDgwOTg2Ni80MTMxMjU0NTEtNThkODBjYjctYTM4NS00ZWJiLWJkYjQtZTA0ZTBhMWY3ZDM5Lm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAyMTQlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMjE0VDA0MDAwMFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWI2YThiOTkyZmE1N2NmMjJiYjRjOGFlYjRhYzVhMjFmYWE0NTdiYTY5ZDk3YWY4ZTE5OWM0ZDlkNDU2OTkyYmYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.b4O34xx5tS4CBH_rS4qQQRPAxjjp3uhri-zUhSNlFa0)
 
 ## Table of Contents
 
